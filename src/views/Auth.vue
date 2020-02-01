@@ -8,14 +8,17 @@
                     <button class="toggleButton" :class="{'active' : loginIsShown}" @click="showLoginForm()">ورود</button>
                     <button class="toggleButton" :class="{'active' : !loginIsShown}" @click="showRegisterForm()">ثبت نام</button>
                 </h2>
-                <form @submit.prevent="login()">
-                    <input v-model="inputLoginData.emailOrPhone" type="text" pattern="" class="formInput" placeholder="شماره موبایل یا ایمیل">
-                    <input v-model="inputLoginData.password" type="password" pattern="" class="formInput" placeholder="رمز عبور">
+                <form @submit.prevent="login">
+                    <input v-model="inputLoginData.username" type="text" class="formInput" placeholder="نام کاربری">
+                    <input v-model="inputLoginData.password" type="password" class="formInput" placeholder="رمز عبور">
                     <p>
                         رمز خود را 
                         <a href="#">فراموش کرده اید؟</a>
                     </p>
                     <input type="submit" class="submitInput" value="ارسال">
+                </form>
+                <form @submit.prevent="logout">
+                    <input type="submit" class="submitInput" value="خروج">
                 </form>
             </div>
             <div class="formWrapper" v-else>
@@ -23,11 +26,11 @@
                     <button class="toggleButton" :class="{'active' : loginIsShown}" @click="showLoginForm()">ورود</button>
                     <button class="toggleButton" :class="{'active' : !loginIsShown}" @click="showRegisterForm()">ثبت نام</button>
                 </h2>
-                <form @submit.prevent="register()">
-                    <input v-model="inputRegisterData.firstName" type="text" pattern="" class="formInput" placeholder="نام">
-                    <input v-model="inputRegisterData.lastName" type="text" pattern="" class="formInput" placeholder="نام خانوادگی">
-                    <input v-model="inputRegisterData.emailOrPhone" type="text" pattern="" class="formInput" placeholder="شماره موبایل یا ایمیل">
-                    <input v-model="inputRegisterData.password" type="password" pattern="" class="formInput" placeholder="رمز عبور">
+                <form @submit.prevent="register">
+                    <input v-model="inputRegisterData.name" type="text" class="formInput" placeholder="نام">
+                    <input v-model="inputRegisterData.username" type="text" class="formInput" placeholder="نام کاربری">
+                    <input v-model="inputRegisterData.email" type="text" class="formInput" placeholder="شماره موبایل یا ایمیل">
+                    <input v-model="inputRegisterData.password" type="password" class="formInput" placeholder="رمز عبور">
                     <p>
                         ثبت نام به معنی رعایت 
                         <a href="#">قوانین و مقررات</a>
@@ -35,12 +38,15 @@
                     </p>
                     <input type="submit" class="submitInput" value="ارسال">
                 </form>
+
             </div>
         </div>
     </main>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     name : "Auth",
     data() {
@@ -65,11 +71,41 @@ export default {
         showLoginForm() {
             this.loginIsShown = true;
         },
-        register() {
-            console.log('register with payload ', this.inputRegisterData);
+        register(e) {
+            e.preventDefault();
+            const url = "http://127.0.0.1:8000/accounts/signup";
+
+            let data = {
+                username: this.inputRegisterData.username,
+                password: this.inputRegisterData.password,
+                email: this.inputRegisterData.email,
+                name: this.inputRegisterData.name
+            };
+
+            axios.post(url, data).then(res => {
+                console.log(res.data)
+            });
         },
-        login() {
-            console.log('login with payload ', this.inputLoginData);
+        login(e) {
+            e.preventDefault();
+            const url = "http://127.0.0.1:8000/accounts/signin";
+
+            let data = {
+                username: this.inputLoginData.username,
+                password: this.inputLoginData.password
+            };
+
+            axios.post(url, data).then(res => {
+                console.log(res.data)
+            });
+        },
+        logout(e) {
+            e.preventDefault();
+            const url = "http://127.0.0.1:8000/accounts/username";
+
+            axios.get(url).then(res => {
+                console.log(res.data)
+            });
         }
     }
 }
